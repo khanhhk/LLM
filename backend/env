@@ -1,0 +1,12 @@
+MYSQL_ROOT_PASSWORD='root_password'
+MYSQL_HOST='mariadb-tiny'
+MYSQL_PORT=3306
+
+CELERY_BROKER_URL="redis://valkey-db:6379"
+CELERY_RESULT_BACKEND="redis://valkey-db:6379"
+
+GOOGLE_API_KEY="AIzaSyDVUp-kJSB9mPlfWvapU"
+GOOGLE_CSE_ID="45310bfb0a047df"
+
+COHERE_API_KEY="iTw6CPSp21nWYDZGe8Y6O1"
+OPENAI_API_KEY='sk-proj-PjeaLYpapoe-KfoM7Hr'
