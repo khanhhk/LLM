@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from models import insert_document
 from utils import setup_logging
-from tasks import llm_handle_message, index_document, chunk_and_index_document
+from tasks import llm_handle_message, chunk_and_index_document
 from vectorize import create_collection
 
 setup_logging()

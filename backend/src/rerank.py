@@ -1,10 +1,5 @@
 import cohere
-import requests
-import numpy as np
 import os
-from time import time
-from typing import List
-
 
 # Set up your cohere client
 COHERE_API_KEY = os.environ.get("COHERE_API_KEY")

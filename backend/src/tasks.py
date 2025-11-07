@@ -1,6 +1,4 @@
-import asyncio
 import logging
-from copy import copy
 
 from celery import shared_task
 

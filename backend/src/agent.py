@@ -3,8 +3,7 @@ import logging
 from celery import shared_task
 from llama_index.core.agent import ReActAgent
 from llama_index.llms.openai import OpenAI
-from llama_index.core.llms import ChatMessage
-from llama_index.core.tools import BaseTool, FunctionTool
+from llama_index.core.tools import FunctionTool
 from search import search_engine
 from brain import calculate_fixed_monthly_payment, calculate_future_value
 

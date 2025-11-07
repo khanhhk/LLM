@@ -1,8 +1,6 @@
-import asyncio
 import logging
 from xml.dom import ValidationErr
 
-from sqlalchemy.orm import Session
 from sqlalchemy.future import select
 from sqlalchemy import Column, String, Boolean, DateTime, Integer
 from sqlalchemy.ext.declarative import declarative_base
