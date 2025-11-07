@@ -1,4 +1,5 @@
 import os
+
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -27,11 +28,7 @@ def google_search(query, api_key, cse_id, num_results=10):
         service = build("customsearch", "v1", developerKey=api_key)
 
         # Execute the search query
-        res = (
-            service.cse()
-            .list(q=query, cx=cse_id, num=num_results)
-            .execute()
-        )
+        res = service.cse().list(q=query, cx=cse_id, num=num_results).execute()
 
         # Extract relevant information from the search results
         results = []
@@ -50,13 +47,15 @@ def google_search(query, api_key, cse_id, num_results=10):
         print(f"An error occurred: {e}")
         return None
     except Exception as e:
-      print(f"An unexpected error occurred: {e}")
-      return None
+        print(f"An unexpected error occurred: {e}")
+        return None
 
 
 def search_engine(search_query, top_k=4):
     """Google search tool"""
-    search_results = google_search(search_query, google_api_key, google_cse_id, num_results=top_k)
+    search_results = google_search(
+        search_query, google_api_key, google_cse_id, num_results=top_k
+    )
 
     if search_results:
         output = ""

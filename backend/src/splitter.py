@@ -1,25 +1,21 @@
 import json
 import logging
 
-from llama_index.core import Document
-from llama_index.core.schema import TextNode
-from llama_index.core.node_parser import TokenTextSplitter
-
 from brain import chat_complete
+from llama_index.core import Document
+from llama_index.core.node_parser import TokenTextSplitter
+from llama_index.core.schema import TextNode
 
 
 def llm_split(text, metadata):
     messages = [
-        {
-            "role": "system",
-            "content": "You are an amazing virtual assistant"
-        },
+        {"role": "system", "content": "You are an amazing virtual assistant"},
         {
             "role": "user",
             "content": f"split the following text into 300 words each part, return only list of item: "
-                       f"## Input text ##: {text} \n"
-                       f"## Format ## : [\"part 1\", \"part 2\", ...] \n"
-                       f"## Output ##:"
+            f"## Input text ##: {text} \n"
+            f'## Format ## : ["part 1", "part 2", ...] \n'
+            f"## Output ##:",
         },
     ]
     llm_response = chat_complete(messages, model="deepseek-chat", raw=False)
@@ -30,20 +26,13 @@ def llm_split(text, metadata):
 
 
 def split_document(text, metadata={"course": "LLM"}):
-    meta_string = ' '.join([f"{k}={v}" for k, v in metadata.items()])
+    meta_string = " ".join([f"{k}={v}" for k, v in metadata.items()])
     if len(text) < 200:
         return [TextNode(text=text, metadata=metadata)]
     elif len(text) < 1000:
-        doc = Document(
-            text=text,
-            metadata=metadata
-        )
+        doc = Document(text=text, metadata=metadata)
 
-        splitter = TokenTextSplitter(
-            chunk_size=250,
-            chunk_overlap=10,
-            separator="."
-        )
+        splitter = TokenTextSplitter(chunk_size=250, chunk_overlap=10, separator=".")
         nodes = splitter.get_nodes_from_documents([doc])
     else:
         nodes = llm_split(text, metadata)

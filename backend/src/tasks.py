@@ -1,18 +1,17 @@
 import logging
 
-from celery import shared_task
-
 from agent import ai_agent_handle
-from summarizer import summarize_text
-from utils import setup_logging
-from database import get_celery_app
-from brain import detect_route, openai_chat_complete, detect_user_intent, get_embedding, gen_doc_prompt, \
-    deepseek_chat_complete
+from brain import (deepseek_chat_complete, detect_route, detect_user_intent,
+                   gen_doc_prompt, get_embedding, openai_chat_complete)
+from celery import shared_task
 from configs import DEFAULT_COLLECTION_NAME
-from models import update_chat_conversation, get_conversation_messages
-from vectorize import search_vector, add_vector
+from database import get_celery_app
+from models import get_conversation_messages, update_chat_conversation
 from rerank import rerank_documents
 from splitter import split_document
+from summarizer import summarize_text
+from utils import setup_logging
+from vectorize import add_vector, search_vector
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -29,10 +28,7 @@ def follow_up_question(history, question):
 
 def deepseek_answer_message(history, question):
     input_messages = history + [
-        {
-            "role": "user",
-            "content": question
-        },
+        {"role": "user", "content": question},
     ]
 
     logger.info(f"Deepseek messages: {input_messages}")
@@ -59,14 +55,8 @@ def bot_rag_answer_message(history, question):
     ranked_docs = rerank_documents(top_docs, new_question)
 
     openai_messages = history + [
-        {
-            "role": "user",
-            "content": gen_doc_prompt(ranked_docs)
-        },
-        {
-            "role": "user",
-            "content": question
-        },
+        {"role": "user", "content": gen_doc_prompt(ranked_docs)},
+        {"role": "user", "content": question},
     ]
 
     logger.info(f"Openai messages: {openai_messages}")
@@ -77,26 +67,23 @@ def bot_rag_answer_message(history, question):
     logger.info(f"Bot RAG reply: {assistant_answer}")
     return assistant_answer
 
+
 def index_document(id, title, content, collection_name=DEFAULT_COLLECTION_NAME):
     vector = get_embedding(title)
     add_vector_status = add_vector(
         collection_name=collection_name,
         vectors={
-            id: {
-                "vector": vector,
-                "payload": {
-                    "title": title,
-                    "content": content
-                }
-            }
-        }
+            id: {"vector": vector, "payload": {"title": title, "content": content}}
+        },
     )
     logger.info(f"Add vector status: {add_vector_status}")
     return add_vector_status
 
 
-def chunk_and_index_document(id, title, content, collection_name=DEFAULT_COLLECTION_NAME):
-    text = title + ' ' + content
+def chunk_and_index_document(
+    id, title, content, collection_name=DEFAULT_COLLECTION_NAME
+):
+    text = title + " " + content
     nodes = split_document(text)
     status_list = []
     for i in range(len(nodes)):
@@ -105,14 +92,12 @@ def chunk_and_index_document(id, title, content, collection_name=DEFAULT_COLLECT
         add_vector_status = add_vector(
             collection_name=collection_name,
             vectors={
-                id * 100 + i: {
+                id * 100
+                + i: {
                     "vector": vector,
-                    "payload": {
-                        "title": title,
-                        "content": node.text
-                    }
+                    "payload": {"title": title, "content": node.text},
                 }
-            }
+            },
         )
         status_list.append(add_vector_status)
     logger.info(f"Add vector status: {status_list}")
@@ -130,9 +115,9 @@ def bot_route_answer_message(history, question):
     # detect the route
     route = detect_route(history, question)
     logger.info("Bot route: %s", route)
-    if route == 'faq':
+    if route == "faq":
         return bot_rag_answer_message(history, question)
-    elif route == 'finance':
+    elif route == "finance":
         return ai_agent_handle(question)
     else:
         return deepseek_answer_message(history, question)

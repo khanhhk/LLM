@@ -1,4 +1,5 @@
 import logging
+
 from function_schema import get_function_schema
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,11 @@ def calculate_fixed_monthly_payment(principal, annual_interest_rate, months):
     monthly_interest_rate = annual_interest_rate / (12 * 100)
     if monthly_interest_rate == 0:
         return principal / months
-    return principal * (monthly_interest_rate * (1 + monthly_interest_rate) ** months) / ((1 + monthly_interest_rate) ** months - 1)
+    return (
+        principal
+        * (monthly_interest_rate * (1 + monthly_interest_rate) ** months)
+        / ((1 + monthly_interest_rate) ** months - 1)
+    )
 
 
 def calculate_future_value(principal, annual_interest_rate, years):
@@ -38,9 +43,5 @@ def calculate_future_value(principal, annual_interest_rate, years):
     return f"số tiền bạn nhận được sau {years} là {total_amount} VNĐ"
 
 
-
 def get_tool_schema(function):
-    return {
-        "type": "function",
-        "function": get_function_schema(function)
-    }
+    return {"type": "function", "function": get_function_schema(function)}
